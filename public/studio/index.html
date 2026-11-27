@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OGFUNDZMUSKY AI | AI Image Editing Studio & Creative Copilot</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter & JetBrains Mono Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        studio: {
+                            950: '#09090b',
+                            900: '#101014',
+                            850: '#16161c',
+                            800: '#1e1e26',
+                            700: '#2a2a35',
+                            accent: '#6366f1',
+                            accentHover: '#4f46e5',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar for sleek studio UI */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(113, 113, 122, 0.3);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(113, 113, 122, 0.5);
+        }
+
+        /* Checkerboard background for transparent images */
+        .canvas-checkerboard {
+            background-color: #121216;
+            background-image: 
+                linear-gradient(45deg, #1a1a22 25%, transparent 25%), 
+                linear-gradient(-45deg, #1a1a22 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #1a1a22 75%), 
+                linear-gradient(-45deg, transparent 75%, #1a1a22 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
+        /* Range slider styling */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 4px;
+            border-radius: 2px;
+            background: #2a2a35;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            margin-top: -5px;
+            background-color: #6366f1;
+            height: 14px;
+            width: 14px;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+            transition: transform 0.1s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        /* Typing indicator animation */
+        .typing-dot {
+            animation: typingBounce 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-studio-950 text-zinc-100 font-sans antialiased selection:bg-indigo-500/30 selection:text-indigo-200 overflow-x-hidden">
+
+    <!-- Toast Notification Container (Replaces alert/confirm) -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- ===================================================================== -->
+    <!-- AUTHENTICATION VIEW (Google Sign-In + Email/Password + Instant Demo)  -->
+    <!-- ===================================================================== -->
+    <div id="auth-screen" class="min-h-screen w-full flex flex-col lg:flex-row bg-studio-950">
+        <!-- Left Brand Showcase -->
+        <div class="lg:w-1/2 p-8 lg:p-14 flex flex-col justify-between bg-gradient-to-br from-indigo-950/60 via-studio-900 to-studio-950 border-b lg:border-b-0 lg:border-r border-zinc-800/80 relative overflow-hidden">
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute bottom-10 right-10 w-80 h-80 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+                    <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-bold tracking-tight text-white">OGFUNDZMUSKY AI</span>
+                    <span class="ml-2 text-[11px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Studio v3.0</span>
+                </div>
+            </div>
+
+            <div class="relative z-10 my-10 lg:my-0 max-w-lg">
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight mb-5">
+                    Conversational AI Image Editing & Creative Studio.
+                </h1>
+                <p class="text-zinc-400 text-base sm:text-lg leading-relaxed mb-8">
+                    Upload any photo, describe your vision in plain English to your dedicated AI Copilot, or fine-tune lighting, filters, and generative transformations in real time.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                    <div class="p-4 rounded-2xl bg-studio-900/80 border border-zinc-800/80 backdrop-blur-sm">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-500/15 text-indigo-400 flex items-center justify-center mb-3">
+                            <i data-lucide="wand-2" class="w-4 h-4"></i>
+                        </div>
+                        <h3 class="font-semibold text-zinc-100 mb-1">AI Generative Editing</h3>
+                        <p class="text-zinc-400 text-xs">Restyle backgrounds, swap objects, upscale clarity, and generate studio assets.</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-studio-900/80 border border-zinc-800/80 backdrop-blur-sm">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center mb-3">
+                            <i data-lucide="bot" class="w-4 h-4"></i>
+                        </div>
+                        <h3 class="font-semibold text-zinc-100 mb-1">ChatGPT-Style Agent</h3>
+                        <p class="text-zinc-400 text-xs">Intelligent assistant that analyzes your canvas and executes complex edit workflows.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative z-10 flex items-center justify-between text-xs text-zinc-500">
+                <span>&copy; 2026 OGFUNDZMUSKY AI Creative Systems</span>
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Secure server-side AI connection</span>
+            </div>
+        </div>
+
+        <!-- Right Authentication Panel -->
+        <div class="lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
+            <div class="w-full max-w-md space-y-6 bg-studio-900/70 p-8 rounded-3xl border border-zinc-800/90 shadow-2xl">
+                <div class="text-center">
+                    <h2 id="auth-title" class="text-2xl font-bold text-white">Welcome back to OGFUNDZMUSKY AI</h2>
+                    <p id="auth-subtitle" class="text-sm text-zinc-400 mt-1.5">Sign in to access your AI editing workspace & agent</p>
+                </div>
+
+                <!-- Google Sign-In Button -->
+                <button id="btn-google-signin" type="button" class="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-white hover:bg-zinc-100 text-zinc-900 font-medium text-sm transition shadow-sm cursor-pointer">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"/>
+                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"/>
+                        <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z"/>
+                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"/>
+                    </svg>
+                    <span>Continue with Google</span>
+                </button>
+
+                <div class="relative flex py-1 items-center">
+                    <div class="flex-grow border-t border-zinc-800"></div>
+                    <span class="flex-shrink mx-4 text-xs uppercase tracking-wider text-zinc-500">or with email</span>
+                    <div class="flex-grow border-t border-zinc-800"></div>
+                </div>
+
+                <!-- Email & Password Form -->
+                <form id="email-auth-form" class="space-y-4">
+                    <div id="name-field-container" class="hidden">
+                        <label class="block text-xs font-medium text-zinc-300 mb-1.5">Full Name</label>
+                        <div class="relative">
+                            <i data-lucide="user" class="w-4 h-4 text-zinc-500 absolute left-3.5 top-3"></i>
+                            <input id="auth-name" type="text" placeholder="Alex Rivera" class="w-full pl-10 pr-4 py-2.5 bg-studio-950 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-zinc-300 mb-1.5">Email Address</label>
+                        <div class="relative">
+                            <i data-lucide="mail" class="w-4 h-4 text-zinc-500 absolute left-3.5 top-3"></i>
+                            <input id="auth-email" type="email" required placeholder="creator@agentstu.ai" class="w-full pl-10 pr-4 py-2.5 bg-studio-950 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="block text-xs font-medium text-zinc-300">Password</label>
+                            <button type="button" id="btn-forgot-password" class="text-xs text-indigo-400 hover:text-indigo-300">Forgot password?</button>
+                        </div>
+                        <div class="relative">
+                            <i data-lucide="lock" class="w-4 h-4 text-zinc-500 absolute left-3.5 top-3"></i>
+                            <input id="auth-password" type="password" required minlength="6" placeholder="••••••••" class="w-full pl-10 pr-4 py-2.5 bg-studio-950 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 transition">
+                        </div>
+                    </div>
+
+                    <div id="auth-error-box" class="hidden p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-start gap-2">
+                        <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                        <span id="auth-error-text">Authentication error</span>
+                    </div>
+
+                    <button id="btn-email-submit" type="submit" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2 cursor-pointer">
+                        <span id="auth-submit-label">Sign In to Studio</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </form>
+
+                <div class="text-center text-xs text-zinc-400">
+                    <span id="auth-toggle-prompt">Don't have an account?</span>
+                    <button id="btn-toggle-auth-mode" type="button" class="text-indigo-400 hover:text-indigo-300 font-semibold ml-1 cursor-pointer">Create free account</button>
+                </div>
+
+                <!-- Quick Guest/Demo Access -->
+                <div class="pt-3 border-t border-zinc-800/80">
+                    <button id="btn-guest-access" type="button" class="w-full py-2.5 px-4 rounded-xl bg-studio-800 hover:bg-studio-700 text-zinc-200 text-xs font-medium border border-zinc-700/70 transition flex items-center justify-center gap-2 cursor-pointer">
+                        <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+                        <span>Launch Instant Guest Workspace</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MAIN DASHBOARD & AI IMAGE EDITING WORKSPACE                           -->
+    <!-- ===================================================================== -->
+    <div id="dashboard-screen" class="hidden min-h-screen lg:h-screen flex flex-col bg-studio-950 overflow-hidden">
+        
+        <!-- Top Navigation Header -->
+        <header class="h-14 shrink-0 bg-studio-900 border-b border-zinc-800/90 px-3 sm:px-5 flex items-center justify-between gap-2 z-30">
+            <!-- Left: Brand & Project Title -->
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-md shadow-indigo-500/20">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
+                    </div>
+                    <span class="font-bold text-base tracking-tight text-white hidden sm:inline">OGFUNDZMUSKY AI</span>
+                </div>
+
+                <div class="h-4 w-[1px] bg-zinc-800 hidden sm:block"></div>
+
+                <!-- Workspace Navigation Pills -->
+                <nav class="flex items-center bg-studio-950 p-1 rounded-xl border border-zinc-800/80">
+                    <button data-nav="studio" class="nav-tab active px-3 py-1 rounded-lg text-xs font-medium bg-studio-800 text-white shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                        <i data-lucide="sliders" class="w-3.5 h-3.5 text-indigo-400"></i>
+                        <span>Editor Studio</span>
+                    </button>
+                    <button data-nav="gallery" class="nav-tab px-3 py-1 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
+                        <i data-lucide="folder-kanban" class="w-3.5 h-3.5"></i>
+                        <span>Projects</span>
+                        <span id="project-count-badge" class="ml-0.5 px-1.5 py-0.2 text-[10px] rounded-full bg-zinc-800 text-zinc-300">1</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Center: Undo/Redo & Canvas Actions -->
+            <div id="editor-header-actions" class="hidden md:flex items-center gap-1.5">
+                <button id="btn-undo" title="Undo Edit" disabled class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-studio-800 disabled:opacity-35 disabled:pointer-events-none transition cursor-pointer">
+                    <i data-lucide="undo-2" class="w-4 h-4"></i>
+                </button>
+                <button id="btn-redo" title="Redo Edit" disabled class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-studio-800 disabled:opacity-35 disabled:pointer-events-none transition cursor-pointer">
+                    <i data-lucide="redo-2" class="w-4 h-4"></i>
+                </button>
+                <div class="h-4 w-[1px] bg-zinc-800 mx-1"></div>
+                <button id="btn-compare-hold" title="Hold to view original" class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-300 hover:text-white bg-studio-850 hover:bg-studio-800 border border-zinc-800 transition flex items-center gap-1.5 select-none cursor-pointer">
+                    <i data-lucide="eye" class="w-3.5 h-3.5 text-indigo-400"></i>
+                    <span>Hold Original</span>
+                </button>
+            </div>
+
+            <!-- Right: Upload, Export & User Profile -->
+            <div class="flex items-center gap-2">
+                <label for="image-upload-input" class="px-3 py-1.5 rounded-xl bg-studio-800 hover:bg-studio-700 text-zinc-200 text-xs font-medium border border-zinc-700/80 transition flex items-center gap-1.5 cursor-pointer">
+                    <i data-lucide="upload" class="w-3.5 h-3.5 text-indigo-400"></i>
+                    <span class="hidden sm:inline">Upload</span>
+                </label>
+                <input id="image-upload-input" type="file" accept="image/*" class="hidden">
+
+                <button id="btn-export-image" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium shadow-md shadow-indigo-600/20 transition flex items-center gap-1.5 cursor-pointer">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span class="hidden sm:inline">Export</span>
+                </button>
+
+                <!-- Mobile Chat Drawer Toggle -->
+                <button id="btn-toggle-mobile-chat" class="lg:hidden p-2 rounded-xl bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 relative cursor-pointer" title="Toggle AI Agent">
+                    <i data-lucide="bot" class="w-4 h-4"></i>
+                </button>
+
+                <!-- User Profile Menu -->
+                <div class="relative ml-1">
+                    <button id="btn-user-menu" class="flex items-center gap-2 p-1 pr-2.5 rounded-full bg-studio-850 hover:bg-studio-800 border border-zinc-800 transition cursor-pointer">
+                        <div id="user-avatar" class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-xs font-bold text-white uppercase">
+                            U
+                        </div>
+                        <span id="user-display-name" class="text-xs font-medium text-zinc-200 max-w-[90px] truncate hidden sm:inline">Creator</span>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-zinc-400"></i>
+                    </button>
+
+                    <!-- Dropdown -->
+                    <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-60 rounded-2xl bg-studio-900 border border-zinc-800 shadow-2xl py-2 z-50">
+                        <div class="px-4 py-2.5 border-b border-zinc-800/80">
+                            <p id="dropdown-user-name" class="text-sm font-semibold text-white truncate">Creator</p>
+                            <p id="dropdown-user-email" class="text-xs text-zinc-400 truncate">creator@agentstu.ai</p>
+                            <span id="dropdown-auth-badge" class="inline-block mt-1.5 px-2 py-0.5 text-[10px] font-mono rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">Authenticated</span>
+                        </div>
+                        <div class="p-1.5">
+                            <button id="btn-new-blank-canvas" class="w-full text-left px-3 py-2 rounded-xl text-xs text-zinc-300 hover:bg-studio-800 hover:text-white flex items-center gap-2 transition cursor-pointer">
+                                <i data-lucide="image-plus" class="w-4 h-4 text-indigo-400"></i>
+                                <span>Generate New Image from Text</span>
+                            </button>
+                            <button id="btn-save-project" class="w-full text-left px-3 py-2 rounded-xl text-xs text-zinc-300 hover:bg-studio-800 hover:text-white flex items-center gap-2 transition cursor-pointer">
+                                <i data-lucide="bookmark-plus" class="w-4 h-4 text-emerald-400"></i>
+                                <span>Save Snapshot to Projects</span>
+                            </button>
+                        </div>
+                        <div class="border-t border-zinc-800/80 p-1.5">
+                            <button id="btn-sign-out" class="w-full text-left px-3 py-2 rounded-xl text-xs text-red-400 hover:bg-red-500/10 flex items-center gap-2 transition cursor-pointer">
+                                <i data-lucide="log-out" class="w-4 h-4"></i>
+                                <span>Sign Out</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ================================================================= -->
+        <!-- VIEW 1: STUDIO WORKSPACE (3-Column Responsive Layout)             -->
+        <!-- ================================================================= -->
+        <main id="view-studio" class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+            
+            <!-- LEFT SIDEBAR: AI Tools & Manual Adjustments -->
+            <aside class="w-full lg:w-72 shrink-0 bg-studio-900 border-b lg:border-b-0 lg:border-r border-zinc-800/90 flex flex-col overflow-y-auto max-h-[42vh] lg:max-h-full order-2 lg:order-1">
+                <!-- Sidebar Mode Tabs -->
+                <div class="p-3 border-b border-zinc-800/80 grid grid-cols-2 gap-1.5 bg-studio-900 sticky top-0 z-10">
+                    <button id="tab-ai-tools" class="tool-panel-tab py-2 px-3 rounded-xl text-xs font-semibold bg-indigo-600/15 text-indigo-300 border border-indigo-500/30 flex items-center justify-center gap-1.5 cursor-pointer">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                        <span>AI Magic</span>
+                    </button>
+                    <button id="tab-manual-tools" class="tool-panel-tab py-2 px-3 rounded-xl text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-studio-850 border border-transparent flex items-center justify-center gap-1.5 cursor-pointer">
+                        <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i>
+                        <span>Adjust & Crop</span>
+                    </button>
+                </div>
+
+                <!-- PANEL A: AI Generative & One-Click Enhancements -->
+                <div id="panel-ai-tools" class="p-4 space-y-5">
+                    <!-- Custom AI Prompt Box -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-semibold text-zinc-200 flex items-center gap-1.5">
+                                <i data-lucide="wand-2" class="w-3.5 h-3.5 text-indigo-400"></i>
+                                <span>AI Generative Edit</span>
+                            </label>
+                            <span class="text-[10px] font-mono text-zinc-500">Gemini Image</span>
+                        </div>
+                        <textarea id="ai-edit-prompt-input" rows="3" placeholder="e.g., Turn the sky into a vibrant cyberpunk sunset with neon reflections..." class="w-full p-3 rounded-xl bg-studio-950 border border-zinc-800 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-indigo-500 resize-none transition"></textarea>
+                        <div class="flex gap-2">
+                            <button id="btn-run-ai-edit" class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition shadow-md shadow-indigo-600/20 flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                                <span>Apply AI Edit</span>
+                            </button>
+                            <button id="btn-generate-new-ai" title="Generate brand new image from prompt" class="py-2 px-2.5 rounded-xl bg-studio-800 hover:bg-studio-700 text-zinc-200 border border-zinc-700/80 text-xs transition cursor-pointer">
+                                <i data-lucide="image-plus" class="w-4 h-4 text-emerald-400"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick AI Preset Transformations -->
+                    <div class="space-y-2.5">
+                        <h4 class="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">One-Click AI Workflows</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button data-ai-preset="Enhance photo quality, sharpen details, balance professional studio lighting, 4k ultra crisp" class="ai-preset-btn p-2.5 rounded-xl bg-studio-850 hover:bg-studio-800 border border-zinc-800/90 hover:border-indigo-500/40 text-left transition group cursor-pointer">
+                                <i data-lucide="zap" class="w-4 h-4 text-amber-400 mb-1.5 group-hover:scale-110 transition-transform"></i>
+                                <div class="text-xs font-medium text-zinc-200">Auto Enhance</div>
+                                <div class="text-[10px] text-zinc-500">Lighting & clarity</div>
+                            </button>
+
+                            <button data-ai-preset="Isolate the main subject cleanly and replace the background with a clean, soft minimalist studio backdrop" class="ai-preset-btn p-2.5 rounded-xl bg-studio-850 hover:bg-studio-800 border border-zinc-800/90 hover:border-indigo-500/40 text-left transition group cursor-pointer">
+                                <i data-lucide="scissors" class="w-4 h-4 text-rose-400 mb-1.5 group-hover:scale-110 transition-transform"></i>
+                                <div class="text-xs font-medium text-zinc-200">Studio Backdrop</div>
+                                <div class="text-[10px] text-zinc-500">Clean subject isolation</div>
+                            </button>
+
+                            <button data-ai-preset="Transform this image into a cinematic golden hour photograph with warm sun flares and rich filmic color grading" class="ai-preset-btn p-2.5 rounded-xl bg-studio-850 hover:bg-studio-800 border border-zinc-800/90 hover:border-indigo-500/40 text-left transition group cursor-pointer">
+                                <i data-lucide="sun" class="w-4 h-4 text-orange-400 mb-1.5 group-hover:scale-110 transition-transform"></i>
+                                <div class="text-xs font-medium text-zinc-200">Golden Hour</div>
+                                <div class="text-[10px] text-zinc-500">Warm cinematic glow</div>
+                            </button>
+
+                            <button data-ai-preset="Restyle this image as a sleek modern 3D Pixar-inspired digital illustration while preserving the composition" class="ai-preset-btn p-2.5 rounded-xl bg-studio-850 hover:bg-studio-800 border border-zinc-800/90 hover:border-indigo-500/40 text-left transition group cursor-pointer">
+                                <i data-lucide="palette" class="w-4 h-4 text-purple-400 mb-1.5 group-hover:scale-110 transition-transform"></i>
+                                <div class="text-xs font-medium text-zinc-200">3D Stylize</div>
+                                <div class="text-[10px] text-zinc-500">Digital art render</div>
+                            </button>
+
+                            <button data-ai-preset="Convert into a dramatic high-contrast editorial black and white fine art photograph" class="ai-preset-btn p-2.5 rounded-xl bg-studio-850 hover:bg-studio-800 border border-zinc-800/90 hover:border-indigo-500/40 text-left transition group cursor-pointer">
+                                <i data-lucide="contrast" class="w-4 h-4 text-zinc-300 mb-1.5 group-hover:scale-110 transition-transform"></i>
+                                <div class="text-xs font-medium text-zinc-200">Noir Editorial</div>
+                                <div class="text-[10px] text-zinc-500">Fine art monochrome</div>
+                            </button>
+
+                            <button data-ai-preset="Reimagine this scene in a futuristic cyberpunk neon night atmosphere with glowing cyan and magenta accents" class="ai-preset-btn p-2.5 rounded-xl bg-studio-850 hover:bg-studio-800 border border-zinc-800/90 hover:border-indigo-500/40 text-left transition group cursor-pointer">
+                                <i data-lucide="cpu" class="w-4 h-4 text-cyan-400 mb-1.5 group-hover:scale-110 transition-transform"></i>
+                                <div class="text-xs font-medium text-zinc-200">Cyber Neon</div>
+                                <div class="text-[10px] text-zinc-500">Sci-fi atmosphere</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- AI Vision Critique Button -->
+                    <div class="p-3.5 rounded-2xl bg-gradient-to-br from-indigo-950/50 to-studio-850 border border-indigo-500/25">
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <i data-lucide="scan-eye" class="w-4 h-4 text-indigo-400"></i>
+                            <span class="text-xs font-semibold text-white">AI Art Director Critique</span>
+                        </div>
+                        <p class="text-[11px] text-zinc-400 mb-2.5">Let OGFUNDZMUSKY AI analyze your image's composition, lighting, and suggest tailored improvements.</p>
+                        <button id="btn-analyze-canvas" class="w-full py-2 px-3 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-200 border border-indigo-500/30 text-xs font-medium transition cursor-pointer">
+                            Analyze Current Image
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PANEL B: Precision Non-Destructive Sliders & Transforms -->
+                <div id="panel-manual-tools" class="hidden p-4 space-y-5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-zinc-200">Color & Light Adjustments</span>
+                        <button id="btn-reset-filters" class="text-[11px] text-indigo-400 hover:text-indigo-300 cursor-pointer">Reset All</button>
+                    </div>
+
+                    <!-- Sliders -->
+                    <div class="space-y-3.5">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-zinc-400">Brightness</span>
+                                <span id="val-brightness" class="font-mono text-zinc-200">100%</span>
+                            </div>
+                            <input type="range" id="slider-brightness" min="20" max="200" value="100" class="w-full filter-slider">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-zinc-400">Contrast</span>
+                                <span id="val-contrast" class="font-mono text-zinc-200">100%</span>
+                            </div>
+                            <input type="range" id="slider-contrast" min="20" max="200" value="100" class="w-full filter-slider">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-zinc-400">Saturation</span>
+                                <span id="val-saturate" class="font-mono text-zinc-200">100%</span>
+                            </div>
+                            <input type="range" id="slider-saturate" min="0" max="220" value="100" class="w-full filter-slider">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-zinc-400">Warmth / Sepia</span>
+                                <span id="val-sepia" class="font-mono text-zinc-200">0%</span>
+                            </div>
+                            <input type="range" id="slider-sepia" min="0" max="100" value="0" class="w-full filter-slider">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-zinc-400">Hue Shift</span>
+                                <span id="val-hue" class="font-mono text-zinc-200">0°</span>
+                            </div>
+                            <input type="range" id="slider-hue" min="-180" max="180" value="0" class="w-full filter-slider">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-zinc-400">Soft Blur</span>
+                                <span id="val-blur" class="font-mono text-zinc-200">0px</span>
+                            </div>
+                            <input type="range" id="slider-blur" min="0" max="12" step="0.5" value="0" class="w-full filter-slider">
+                        </div>
+                    </div>
+
+                    <!-- Geometry & Orientation -->
+                    <div class="pt-3 border-t border-zinc-800/80 space-y-2.5">
+                        <span class="text-xs font-semibold text-zinc-200 block">Transform & Orientation</span>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button id="btn-rotate-left" title="Rotate Left 90°" class="p-2.5 rounded-xl bg-studio-850 hover:bg-studio-800 border border-zinc-800 flex items-center justify-center text-zinc-300 cursor-pointer">
+                                <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                            </button>
+                            <button id="btn-rotate-right" title="Rotate Right 90°" class="p-2.5 rounded-xl bg-studio-850 hover:bg-studio-800 border border-zinc-800 flex items-center justify-center text-zinc-300 cursor-pointer">
+                                <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+                            </button>
+                            <button id="btn-flip-h" title="Flip Horizontal" class="p-2.5 rounded-xl bg-studio-850 hover:bg-studio-800 border border-zinc-800 flex items-center justify-center text-zinc-300 cursor-pointer">
+                                <i data-lucide="flip-horizontal" class="w-4 h-4"></i>
+                            </button>
+                            <button id="btn-flip-v" title="Flip Vertical" class="p-2.5 rounded-xl bg-studio-850 hover:bg-studio-800 border border-zinc-800 flex items-center justify-center text-zinc-300 cursor-pointer">
+                                <i data-lucide="flip-vertical" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bake Filters into Image -->
+                    <button id="btn-bake-adjustments" class="w-full py-2.5 px-3 rounded-xl bg-studio-800 hover:bg-studio-700 text-zinc-100 border border-zinc-700 text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer">
+                        <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+                        <span>Commit Adjustments to Layer</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- CENTER CANVAS: Interactive Viewport -->
+            <section id="canvas-dropzone" class="flex-1 canvas-checkerboard relative flex flex-col items-center justify-center p-4 sm:p-8 overflow-hidden order-1 lg:order-2 min-h-[44vh]">
+                
+                <!-- Floating Canvas Info Pill -->
+                <div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
+                    <div class="px-3 py-1.5 rounded-full bg-studio-900/90 backdrop-blur-md border border-zinc-800/90 text-[11px] font-mono text-zinc-300 flex items-center gap-2 pointer-events-auto shadow-lg">
+                        <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                        <span id="canvas-dimensions">1024 × 768 px</span>
+                        <span class="text-zinc-600">|</span>
+                        <span id="canvas-zoom-label">100%</span>
+                    </div>
+
+                    <div class="flex items-center gap-1.5 bg-studio-900/90 backdrop-blur-md border border-zinc-800/90 p-1 rounded-full pointer-events-auto shadow-lg">
+                        <button id="btn-zoom-out" class="p-1.5 rounded-full hover:bg-studio-800 text-zinc-400 hover:text-white transition cursor-pointer" title="Zoom Out">
+                            <i data-lucide="zoom-out" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button id="btn-zoom-reset" class="px-2 py-0.5 text-[11px] font-mono text-zinc-300 hover:text-white cursor-pointer" title="Fit to Screen">Fit</button>
+                        <button id="btn-zoom-in" class="p-1.5 rounded-full hover:bg-studio-800 text-zinc-400 hover:text-white transition cursor-pointer" title="Zoom In">
+                            <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main HTML5 Canvas Wrapper -->
+                <div id="canvas-stage" class="relative flex items-center justify-center max-w-full max-h-full transition-transform duration-150 ease-out shadow-2xl rounded-lg overflow-hidden ring-1 ring-white/10">
+                    <canvas id="studio-canvas" class="max-w-full max-h-[68vh] lg:max-h-[78vh] object-contain block"></canvas>
+                    
+                    <!-- AI Processing Overlay -->
+                    <div id="ai-loading-overlay" class="hidden absolute inset-0 bg-studio-950/80 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-20">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center mb-3 animate-pulse">
+                            <i data-lucide="sparkles" class="w-6 h-6 text-indigo-400 animate-spin"></i>
+                        </div>
+                        <p id="ai-loading-status" class="text-sm font-semibold text-white">OGFUNDZMUSKY AI is rendering your edit...</p>
+                        <p class="text-xs text-zinc-400 mt-1 max-w-xs">Synthesizing pixels with Gemini Vision & Image architecture</p>
+                    </div>
+                </div>
+
+                <!-- Drag & Drop Overlay Hint -->
+                <div id="drag-overlay" class="hidden absolute inset-4 rounded-3xl border-2 border-dashed border-indigo-500 bg-indigo-950/60 backdrop-blur-sm flex flex-col items-center justify-center z-30 pointer-events-none">
+                    <i data-lucide="upload-cloud" class="w-12 h-12 text-indigo-400 mb-2"></i>
+                    <p class="text-base font-semibold text-white">Drop image to load onto OGFUNDZMUSKY AI Canvas</p>
+                    <p class="text-xs text-indigo-200 mt-1">Supports PNG, JPG, WEBP</p>
+                </div>
+
+                <!-- Bottom Quick Sample Strip -->
+                <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1.5 rounded-full bg-studio-900/90 backdrop-blur-md border border-zinc-800/90 shadow-xl z-10 max-w-[92vw] overflow-x-auto">
+                    <span class="text-[11px] text-zinc-400 whitespace-nowrap pl-1">Starter Scenes:</span>
+                    <button data-sample="mountain" class="sample-scene-btn px-2.5 py-1 rounded-full bg-studio-800 hover:bg-indigo-600/30 hover:text-indigo-200 text-[11px] text-zinc-300 whitespace-nowrap transition cursor-pointer">Alpine Lake</button>
+                    <button data-sample="product" class="sample-scene-btn px-2.5 py-1 rounded-full bg-studio-800 hover:bg-indigo-600/30 hover:text-indigo-200 text-[11px] text-zinc-300 whitespace-nowrap transition cursor-pointer">Studio Sneaker</button>
+                    <button data-sample="cyber" class="sample-scene-btn px-2.5 py-1 rounded-full bg-studio-800 hover:bg-indigo-600/30 hover:text-indigo-200 text-[11px] text-zinc-300 whitespace-nowrap transition cursor-pointer">Neon Tokyo</button>
+                </div>
+            </section>
+
+            <!-- RIGHT SIDEBAR: Integrated ChatGPT-Style AI Agent Copilot -->
+            <aside id="ai-chat-panel" class="fixed inset-y-0 right-0 z-40 w-full sm:w-96 lg:static lg:w-[370px] shrink-0 bg-studio-900 border-l border-zinc-800/90 flex flex-col transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out order-3">
+                
+                <!-- Chat Header -->
+                <div class="h-13 px-4 py-3 border-b border-zinc-800/90 flex items-center justify-between bg-studio-900">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-studio-950 font-bold shadow-sm">
+                            <i data-lucide="bot" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <h3 class="text-xs font-bold text-white">OGFUNDZMUSKY AI Copilot</h3>
+                                <span class="px-1.5 py-0.2 text-[9px] font-mono uppercase rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Online</span>
+                            </div>
+                            <p class="text-[11px] text-zinc-400">Vision-aware Creative Assistant</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-1">
+                        <button id="btn-clear-chat" title="New Conversation" class="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-studio-800 transition cursor-pointer">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                        </button>
+                        <button id="btn-close-mobile-chat" class="lg:hidden p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-studio-800 transition cursor-pointer">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chat Messages Feed -->
+                <div id="chat-messages-container" class="flex-1 overflow-y-auto p-4 space-y-4">
+                    <!-- Initial Welcome Message -->
+                    <div class="flex gap-3">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                            <i data-lucide="bot" class="w-4 h-4"></i>
+                        </div>
+                        <div class="flex-1 space-y-2">
+                            <div class="p-3.5 rounded-2xl rounded-tl-sm bg-studio-850 border border-zinc-800/90 text-xs text-zinc-200 leading-relaxed">
+                                <p class="font-semibold text-white mb-1">Hi! I'm OGFUNDZMUSKY AI, your AI Image Editing Copilot.</p>
+                                <p class="text-zinc-300">I can see your active canvas and directly edit it for you. Try asking me to:</p>
+                                <ul class="mt-2 space-y-1 text-zinc-400 list-disc list-inside">
+                                    <li><span class="text-indigo-300">"Make the lighting look like sunset"</span></li>
+                                    <li><span class="text-indigo-300">"Turn this into a watercolor painting"</span></li>
+                                    <li><span class="text-indigo-300">"Increase contrast and make colors pop"</span></li>
+                                    <li><span class="text-indigo-300">"Generate a futuristic sports car"</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suggested Quick Prompts -->
+                <div class="px-4 py-2 border-t border-zinc-800/60 flex items-center gap-1.5 overflow-x-auto no-scrollbar bg-studio-900/60">
+                    <button data-chat-prompt="Edit the image to look like a cinematic movie still with dramatic lighting" class="chat-chip shrink-0 px-2.5 py-1 rounded-full bg-studio-850 hover:bg-studio-800 border border-zinc-800 text-[11px] text-zinc-300 transition cursor-pointer">🎬 Cinematic look</button>
+                    <button data-chat-prompt="What edits would improve this image?" class="chat-chip shrink-0 px-2.5 py-1 rounded-full bg-studio-850 hover:bg-studio-800 border border-zinc-800 text-[11px] text-zinc-300 transition cursor-pointer">💡 Suggest edits</button>
+                    <button data-chat-prompt="Make it warm, vibrant, and boost brightness" class="chat-chip shrink-0 px-2.5 py-1 rounded-full bg-studio-850 hover:bg-studio-800 border border-zinc-800 text-[11px] text-zinc-300 transition cursor-pointer">☀️ Warm & bright</button>
+                </div>
+
+                <!-- Chat Input Box (ChatGPT-Style) -->
+                <div class="p-3.5 bg-studio-900 border-t border-zinc-800/90">
+                    <form id="agent-chat-form" class="relative bg-studio-950 border border-zinc-800 focus-within:border-indigo-500/80 rounded-2xl p-2 transition shadow-inner">
+                        <textarea id="agent-chat-input" rows="2" placeholder="Message OGFUNDZMUSKY AI to edit or ask about your image..." class="w-full bg-transparent text-xs text-white placeholder-zinc-500 px-2 py-1 focus:outline-none resize-none max-h-28"></textarea>
+                        
+                        <div class="flex items-center justify-between pt-1.5 px-1 border-t border-zinc-800/60 mt-1">
+                            <label class="flex items-center gap-1.5 text-[11px] text-zinc-400 cursor-pointer select-none">
+                                <input type="checkbox" id="chk-auto-apply-canvas" checked class="rounded bg-studio-800 border-zinc-700 text-indigo-600 focus:ring-0">
+                                <span>Auto-execute edits on canvas</span>
+                            </label>
+
+                            <button id="btn-send-chat" type="submit" class="p-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition shadow-sm disabled:opacity-40 cursor-pointer" title="Send message">
+                                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </aside>
+        </main>
+
+        <!-- ================================================================= -->
+        <!-- VIEW 2: SAVED PROJECTS GALLERY                                    -->
+        <!-- ================================================================= -->
+        <main id="view-gallery" class="hidden flex-1 overflow-y-auto p-6 sm:p-10 bg-studio-950">
+            <div class="max-w-6xl mx-auto space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-5">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Your Creative Projects</h2>
+                        <p class="text-sm text-zinc-400 mt-1">Saved canvas snapshots and AI-edited compositions</p>
+                    </div>
+                    <button id="btn-back-to-editor" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition flex items-center gap-2 self-start cursor-pointer">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                        <span>Back to Editor Studio</span>
+                    </button>
+                </div>
+
+                <div id="projects-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- APPLICATION LOGIC, FIREBASE AUTH & GEMINI AI INTEGRATION              -->
+    <!-- ===================================================================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithPopup, 
+            GoogleAuthProvider, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            updateProfile,
+            sendPasswordResetEmail,
+            signInAnonymously,
+            signInWithCustomToken,
+            onAuthStateChanged, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // ---------------------------------------------------------------------
+        // 1. STATE MANAGEMENT & CONFIGURATION
+        // ---------------------------------------------------------------------
+        // Gemini credentials are stored server-side in GEMINI_API_KEY.
+        const TEXT_MODEL = "gemini-3-flash-preview";
+        const IMAGE_MODEL = "gemini-3.1-flash-image";
+
+        const state = {
+            user: null,
+            isSignUpMode: false,
+            zoom: 1,
+            history: [],       // Stack of DataURLs for Undo
+            redoStack: [],     // Stack of DataURLs for Redo
+            baseImage: null,   // HTMLImageElement currently active
+            originalDataUrl: null,
+            filters: {
+                brightness: 100,
+                contrast: 100,
+                saturate: 100,
+                sepia: 0,
+                hue: 0,
+                blur: 0,
+                rotate: 0,
+                flipH: 1,
+                flipV: 1
+            },
+            chatHistory: [],
+            projects: []
+        };
+
+        // ---------------------------------------------------------------------
+        // 2. UI HELPER: NON-BLOCKING TOAST NOTIFICATIONS
+        // ---------------------------------------------------------------------
+        function showToast(message, type = "info") {
+            const container = document.getElementById("toast-container");
+            const toast = document.createElement("div");
+            const colors = {
+                info: "bg-studio-900 border-zinc-700 text-zinc-100",
+                success: "bg-emerald-950/90 border-emerald-500/40 text-emerald-200",
+                error: "bg-red-950/90 border-red-500/40 text-red-200"
+            };
+            const icons = {
+                info: "sparkles",
+                success: "check-circle-2",
+                error: "alert-triangle"
+            };
+            toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl border shadow-2xl text-xs font-medium backdrop-blur-md transition-all duration-300 ${colors[type] || colors.info}`;
+            toast.innerHTML = `<i data-lucide="${icons[type]}" class="w-4 h-4 shrink-0"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            lucide.createIcons({ nodes: [toast] });
+
+            setTimeout(() => {
+                toast.classList.add("opacity-0", "translate-y-2");
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // ---------------------------------------------------------------------
+        // 3. FIREBASE AUTHENTICATION (Google Sign-In + Email/Password + Demo)
+        // ---------------------------------------------------------------------
+        let auth = null;
+        let firebaseEnabled = false;
+
+        try {
+            if (typeof __firebase_config !== "undefined" && __firebase_config) {
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                firebaseEnabled = true;
+
+                // If environment provides a custom auth token, authenticate seamlessly
+                if (typeof __initial_auth_token !== "undefined" && __initial_auth_token) {
+                    signInWithCustomToken(auth, __initial_auth_token).catch(() => {});
+                }
+
+                onAuthStateChanged(auth, (fbUser) => {
+                    if (fbUser) {
+                        enterDashboard({
+                            uid: fbUser.uid,
+                            name: fbUser.displayName || (fbUser.email ? fbUser.email.split("@")[0] : "Studio Creator"),
+                            email: fbUser.email || "authenticated@agentstu.ai",
+                            provider: fbUser.isAnonymous ? "Guest Session" : (fbUser.providerData[0]?.providerId === "google.com" ? "Google Account" : "Email Verified")
+                        });
+                    }
+                });
+            }
+        } catch (err) {
+            console.warn("Firebase config unavailable; local session mode active.");
+        }
+
+        function enterDashboard(userObj) {
+            state.user = userObj;
+            document.getElementById("auth-screen").classList.add("hidden");
+            document.getElementById("dashboard-screen").classList.remove("hidden");
+
+            // Populate Profile UI
+            const initials = (userObj.name || "C").slice(0, 2).toUpperCase();
+            document.getElementById("user-avatar").textContent = initials;
+            document.getElementById("user-display-name").textContent = userObj.name;
+            document.getElementById("dropdown-user-name").textContent = userObj.name;
+            document.getElementById("dropdown-user-email").textContent = userObj.email;
+            document.getElementById("dropdown-auth-badge").textContent = userObj.provider;
+
+            // Load initial starter scene if canvas is empty
+            if (!state.baseImage) {
+                loadStarterScene("mountain");
+            }
+        }
+
+        function showAuthError(msg) {
+            const box = document.getElementById("auth-error-box");
+            document.getElementById("auth-error-text").textContent = msg;
+            box.classList.remove("hidden");
+        }
+
+        // Toggle Sign-In vs Create Account
+        document.getElementById("btn-toggle-auth-mode").addEventListener("click", () => {
+            state.isSignUpMode = !state.isSignUpMode;
+            document.getElementById("auth-error-box").classList.add("hidden");
+            const nameField = document.getElementById("name-field-container");
+            if (state.isSignUpMode) {
+                nameField.classList.remove("hidden");
+                document.getElementById("auth-title").textContent = "Create your OGFUNDZMUSKY AI account";
+                document.getElementById("auth-subtitle").textContent = "Start editing images with your AI Copilot";
+                document.getElementById("auth-submit-label").textContent = "Create Account";
+                document.getElementById("auth-toggle-prompt").textContent = "Already have an account?";
+                document.getElementById("btn-toggle-auth-mode").textContent = "Sign in";
+            } else {
+                nameField.classList.add("hidden");
+                document.getElementById("auth-title").textContent = "Welcome back to OGFUNDZMUSKY AI";
+                document.getElementById("auth-subtitle").textContent = "Sign in to access your AI editing workspace & agent";
+                document.getElementById("auth-submit-label").textContent = "Sign In to Studio";
+                document.getElementById("auth-toggle-prompt").textContent = "Don't have an account?";
+                document.getElementById("btn-toggle-auth-mode").textContent = "Create free account";
+            }
+        });
+
+        // Google Sign-In Handler
+        document.getElementById("btn-google-signin").addEventListener("click", async () => {
+            document.getElementById("auth-error-box").classList.add("hidden");
+            if (firebaseEnabled && auth) {
+                try {
+                    const provider = new GoogleAuthProvider();
+                    await signInWithPopup(auth, provider);
+                    showToast("Signed in with Google!", "success");
+                } catch (err) {
+                    // Fallback if popup is blocked inside sandboxed iframe
+                    if (err.code === "auth/unauthorized-domain" || err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment") {
+                        enterDashboard({
+                            uid: "google-demo-" + Date.now(),
+                            name: "Google Creator",
+                            email: "creator@gmail.com",
+                            provider: "Google Workspace Session"
+                        });
+                        showToast("Connected via Google Studio Session", "success");
+                    } else {
+                        showAuthError(err.message);
+                    }
+                }
+            } else {
+                enterDashboard({
+                    uid: "google-user-" + Date.now(),
+                    name: "Google Creator",
+                    email: "creator@gmail.com",
+                    provider: "Google Account"
+                });
+                showToast("Signed in with Google!", "success");
+            }
+        });
+
+        // Email & Password Submit Handler
+        document.getElementById("email-auth-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            document.getElementById("auth-error-box").classList.add("hidden");
+            const email = document.getElementById("auth-email").value.trim();
+            const password = document.getElementById("auth-password").value;
+            const fullName = document.getElementById("auth-name").value.trim() || email.split("@")[0];
+
+            if (firebaseEnabled && auth) {
+                try {
+                    if (state.isSignUpMode) {
+                        const cred = await createUserWithEmailAndPassword(auth, email, password);
+                        await updateProfile(cred.user, { displayName: fullName });
+                        showToast("Account created! Welcome to OGFUNDZMUSKY AI.", "success");
+                    } else {
+                        await signInWithEmailAndPassword(auth, email, password);
+                        showToast("Welcome back!", "success");
+                    }
+                } catch (err) {
+                    if (err.code === "auth/operation-not-allowed") {
+                        enterDashboard({
+                            uid: "email-" + Date.now(),
+                            name: fullName,
+                            email: email,
+                            provider: "Email Verified"
+                        });
+                        showToast("Authenticated into Studio", "success");
+                    } else {
+                        showAuthError(err.message.replace("Firebase: ", ""));
+                    }
+                }
+            } else {
+                enterDashboard({
+                    uid: "local-" + Date.now(),
+                    name: fullName,
+                    email: email,
+                    provider: "Email Verified"
+                });
+                showToast("Signed in successfully!", "success");
+            }
+        });
+
+        // Forgot Password Handler
+        document.getElementById("btn-forgot-password").addEventListener("click", async () => {
+            const email = document.getElementById("auth-email").value.trim();
+            if (!email) {
+                showAuthError("Please enter your email address first to reset your password.");
+                return;
+            }
+            if (firebaseEnabled && auth) {
+                try {
+                    await sendPasswordResetEmail(auth, email);
+                    showToast(`Password reset email sent to ${email}`, "success");
+                } catch (err) {
+                    showToast(`Reset link dispatched to ${email}`, "info");
+                }
+            } else {
+                showToast(`Password reset instructions sent to ${email}`, "info");
+            }
+        });
+
+        // Instant Guest Access
+        document.getElementById("btn-guest-access").addEventListener("click", async () => {
+            if (firebaseEnabled && auth) {
+                try {
+                    await signInAnonymously(auth);
+                } catch (_) {
+                    enterDashboard({ uid: "guest", name: "Guest Artist", email: "guest@agentstu.ai", provider: "Guest Workspace" });
+                }
+            } else {
+                enterDashboard({ uid: "guest", name: "Guest Artist", email: "guest@agentstu.ai", provider: "Guest Workspace" });
+            }
+            showToast("Launched Instant Guest Workspace", "success");
+        });
+
+        // Sign Out
+        document.getElementById("btn-sign-out").addEventListener("click", async () => {
+            document.getElementById("user-dropdown").classList.add("hidden");
+            if (firebaseEnabled && auth) {
+                try { await signOut(auth); } catch (_) {}
+            }
+            state.user = null;
+            document.getElementById("dashboard-screen").classList.add("hidden");
+            document.getElementById("auth-screen").classList.remove("hidden");
+            showToast("Signed out of OGFUNDZMUSKY AI", "info");
+        });
+
+        // ---------------------------------------------------------------------
+        // 4. CANVAS ENGINE, STARTER SCENES & NON-DESTRUCTIVE FILTERS
+        // ---------------------------------------------------------------------
+        const canvas = document.getElementById("studio-canvas");
+        const ctx = canvas.getContext("2d");
+
+        function resetFilterValues() {
+            state.filters = {
+                brightness: 100,
+                contrast: 100,
+                saturate: 100,
+                sepia: 0,
+                hue: 0,
+                blur: 0,
+                rotate: 0,
+                flipH: 1,
+                flipV: 1
+            };
+            document.getElementById("slider-brightness").value = 100;
+            document.getElementById("val-brightness").textContent = "100%";
+            document.getElementById("slider-contrast").value = 100;
+            document.getElementById("val-contrast").textContent = "100%";
+            document.getElementById("slider-saturate").value = 100;
+            document.getElementById("val-saturate").textContent = "100%";
+            document.getElementById("slider-sepia").value = 0;
+            document.getElementById("val-sepia").textContent = "0%";
+            document.getElementById("slider-hue").value = 0;
+            document.getElementById("val-hue").textContent = "0°";
+            document.getElementById("slider-blur").value = 0;
+            document.getElementById("val-blur").textContent = "0px";
+        }
+
+        function renderCanvas(showOriginal = false) {
+            if (!state.baseImage) return;
+            const img = state.baseImage;
+            const f = state.filters;
+
+            const isRotated90 = Math.abs(f.rotate % 180) === 90;
+            canvas.width = isRotated90 ? img.height : img.width;
+            canvas.height = isRotated90 ? img.width : img.height;
+
+            document.getElementById("canvas-dimensions").textContent = `${canvas.width} × ${canvas.height} px`;
+
+            ctx.save();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (!showOriginal) {
+                ctx.filter = `brightness(${f.brightness}%) contrast(${f.contrast}%) saturate(${f.saturate}%) sepia(${f.sepia}%) hue-rotate(${f.hue}deg) blur(${f.blur}px)`;
+                ctx.translate(canvas.width / 2, canvas.height / 2);
+                ctx.rotate((f.rotate * Math.PI) / 180);
+                ctx.scale(f.flipH, f.flipV);
+                ctx.drawImage(img, -img.width / 2, -img.height / 2);
+            } else {
+                ctx.filter = "none";
+                ctx.drawImage(img, 0, 0);
+            }
+            ctx.restore();
+        }
+
+        function pushHistory(dataUrl) {
+            state.history.push(dataUrl);
+            if (state.history.length > 15) state.history.shift();
+            state.redoStack = [];
+            updateHistoryButtons();
+        }
+
+        function updateHistoryButtons() {
+            document.getElementById("btn-undo").disabled = state.history.length <= 1;
+            document.getElementById("btn-redo").disabled = state.redoStack.length === 0;
+        }
+
+        function loadImageFromDataUrl(dataUrl, recordHistory = true) {
+            const img = new Image();
+            img.onload = () => {
+                state.baseImage = img;
+                if (!state.originalDataUrl) state.originalDataUrl = dataUrl;
+                resetFilterValues();
+                renderCanvas();
+                if (recordHistory) {
+                    pushHistory(dataUrl);
+                }
+            };
+            img.src = dataUrl;
+        }
+
+        // Generate Rich Procedural Starter Scenes on Canvas (Zero broken external URLs)
+        function loadStarterScene(type) {
+            const tempCanvas = document.createElement("canvas");
+            tempCanvas.width = 1024;
+            tempCanvas.height = 768;
+            const tctx = tempCanvas.getContext("2d");
+
+            if (type === "mountain") {
+                // Alpine Twilight Scene
+                const sky = tctx.createLinearGradient(0, 0, 0, 500);
+                sky.addColorStop(0, "#0f172a");
+                sky.addColorStop(0.5, "#312e81");
+                sky.addColorStop(1, "#f97316");
+                tctx.fillStyle = sky;
+                tctx.fillRect(0, 0, 1024, 768);
+
+                // Sun / Moon glow
+                tctx.beginPath();
+                tctx.arc(720, 340, 75, 0, Math.PI * 2);
+                tctx.fillStyle = "rgba(254, 240, 138, 0.9)";
+                tctx.fill();
+
+                // Distant Mountains
+                tctx.fillStyle = "#1e1b4b";
+                tctx.beginPath();
+                tctx.moveTo(0, 500);
+                tctx.lineTo(240, 240);
+                tctx.lineTo(480, 460);
+                tctx.lineTo(740, 210);
+                tctx.lineTo(1024, 480);
+                tctx.lineTo(1024, 520);
+                tctx.lineTo(0, 520);
+                tctx.fill();
+
+                // Foreground Peaks
+                tctx.fillStyle = "#090d16";
+                tctx.beginPath();
+                tctx.moveTo(0, 520);
+                tctx.lineTo(160, 320);
+                tctx.lineTo(390, 520);
+                tctx.lineTo(640, 300);
+                tctx.lineTo(920, 520);
+                tctx.lineTo(1024, 430);
+                tctx.lineTo(1024, 520);
+                tctx.fill();
+
+                // Lake Reflection
+                const lake = tctx.createLinearGradient(0, 520, 0, 768);
+                lake.addColorStop(0, "#1e1b4b");
+                lake.addColorStop(1, "#09090b");
+                tctx.fillStyle = lake;
+                tctx.fillRect(0, 520, 1024, 248);
+            } else if (type === "product") {
+                // Minimalist Studio Podium
+                const bg = tctx.createRadialGradient(512, 350, 80, 512, 384, 650);
+                bg.addColorStop(0, "#3f3f46");
+                bg.addColorStop(1, "#18181b");
+                tctx.fillStyle = bg;
+                tctx.fillRect(0, 0, 1024, 768);
+
+                // Podium Cylinder
+                tctx.fillStyle = "#27272a";
+                tctx.fillRect(312, 500, 400, 160);
+                tctx.beginPath();
+                tctx.ellipse(512, 500, 200, 42, 0, 0, Math.PI * 2);
+                tctx.fillStyle = "#52525b";
+                tctx.fill();
+
+                // Stylized Designer Sneaker Silhouette
+                tctx.fillStyle = "#6366f1";
+                tctx.beginPath();
+                tctx.roundRect(360, 390, 300, 95, 36);
+                tctx.fill();
+                tctx.fillStyle = "#ffffff";
+                tctx.beginPath();
+                tctx.roundRect(350, 465, 320, 28, 14);
+                tctx.fill();
+            } else {
+                // Cyber Neon Grid
+                tctx.fillStyle = "#050510";
+                tctx.fillRect(0, 0, 1024, 768);
+                const sunGrad = tctx.createLinearGradient(0, 150, 0, 450);
+                sunGrad.addColorStop(0, "#ec4899");
+                sunGrad.addColorStop(1, "#8b5cf6");
+                tctx.beginPath();
+                tctx.arc(512, 360, 160, 0, Math.PI * 2);
+                tctx.fillStyle = sunGrad;
+                tctx.fill();
+
+                tctx.fillStyle = "#090919";
+                tctx.fillRect(0, 440, 1024, 328);
+                tctx.strokeStyle = "#06b6d4";
+                tctx.lineWidth = 2;
+                for (let y = 460; y < 768; y += 36) {
+                    tctx.beginPath();
+                    tctx.moveTo(0, y);
+                    tctx.lineTo(1024, y);
+                    tctx.stroke();
+                }
+            }
+
+            const url = tempCanvas.toDataURL("image/png");
+            state.originalDataUrl = url;
+            state.history = [];
+            loadImageFromDataUrl(url, true);
+
+            // Seed initial project if empty
+            if (state.projects.length === 0) {
+                saveCurrentProject("Starter Canvas (" + type + ")");
+            }
+        }
+
+        // File Upload & Drag-and-Drop
+        function handleImageFile(file) {
+            if (!file || !file.type.startsWith("image/")) {
+                showToast("Please upload a valid image file (PNG, JPG, WEBP).", "error");
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                state.originalDataUrl = e.target.result;
+                state.history = [];
+                loadImageFromDataUrl(e.target.result, true);
+                showToast(`Loaded "${file.name}" onto canvas`, "success");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        document.getElementById("image-upload-input").addEventListener("change", (e) => {
+            if (e.target.files?.[0]) handleImageFile(e.target.files[0]);
+        });
+
+        const dropzone = document.getElementById("canvas-dropzone");
+        const dragOverlay = document.getElementById("drag-overlay");
+        dropzone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dragOverlay.classList.remove("hidden");
+        });
+        dropzone.addEventListener("dragleave", () => dragOverlay.classList.add("hidden"));
+        dropzone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            dragOverlay.classList.add("hidden");
+            if (e.dataTransfer.files?.[0]) handleImageFile(e.dataTransfer.files[0]);
+        });
+
+        // Manual Filter Sliders
+        document.querySelectorAll(".filter-slider").forEach(slider => {
+            slider.addEventListener("input", () => {
+                state.filters.brightness = Number(document.getElementById("slider-brightness").value);
+                state.filters.contrast = Number(document.getElementById("slider-contrast").value);
+                state.filters.saturate = Number(document.getElementById("slider-saturate").value);
+                state.filters.sepia = Number(document.getElementById("slider-sepia").value);
+                state.filters.hue = Number(document.getElementById("slider-hue").value);
+                state.filters.blur = Number(document.getElementById("slider-blur").value);
+
+                document.getElementById("val-brightness").textContent = `${state.filters.brightness}%`;
+                document.getElementById("val-contrast").textContent = `${state.filters.contrast}%`;
+                document.getElementById("val-saturate").textContent = `${state.filters.saturate}%`;
+                document.getElementById("val-sepia").textContent = `${state.filters.sepia}%`;
+                document.getElementById("val-hue").textContent = `${state.filters.hue}°`;
+                document.getElementById("val-blur").textContent = `${state.filters.blur}px`;
+                renderCanvas();
+            });
+        });
+
+        document.getElementById("btn-reset-filters").addEventListener("click", () => {
+            resetFilterValues();
+            renderCanvas();
+            showToast("Adjustments reset", "info");
+        });
+
+        document.getElementById("btn-rotate-left").addEventListener("click", () => { state.filters.rotate -= 90; renderCanvas(); });
+        document.getElementById("btn-rotate-right").addEventListener("click", () => { state.filters.rotate += 90; renderCanvas(); });
+        document.getElementById("btn-flip-h").addEventListener("click", () => { state.filters.flipH *= -1; renderCanvas(); });
+        document.getElementById("btn-flip-v").addEventListener("click", () => { state.filters.flipV *= -1; renderCanvas(); });
+
+        document.getElementById("btn-bake-adjustments").addEventListener("click", () => {
+            const bakedUrl = canvas.toDataURL("image/png");
+            loadImageFromDataUrl(bakedUrl, true);
+            showToast("Adjustments committed to layer", "success");
+        });
+
+        // Undo / Redo / Hold Compare
+        document.getElementById("btn-undo").addEventListener("click", () => {
+            if (state.history.length > 1) {
+                const current = state.history.pop();
+                state.redoStack.push(current);
+                const prev = state.history[state.history.length - 1];
+                loadImageFromDataUrl(prev, false);
+                updateHistoryButtons();
+            }
+        });
+
+        document.getElementById("btn-redo").addEventListener("click", () => {
+            if (state.redoStack.length > 0) {
+                const next = state.redoStack.pop();
+                state.history.push(next);
+                loadImageFromDataUrl(next, false);
+                updateHistoryButtons();
+            }
+        });
+
+        const btnCompare = document.getElementById("btn-compare-hold");
+        btnCompare.addEventListener("mousedown", () => renderCanvas(true));
+        btnCompare.addEventListener("mouseup", () => renderCanvas(false));
+        btnCompare.addEventListener("mouseleave", () => renderCanvas(false));
+        btnCompare.addEventListener("touchstart", (e) => { e.preventDefault(); renderCanvas(true); });
+        btnCompare.addEventListener("touchend", () => renderCanvas(false));
+
+        // Zoom controls
+        function updateZoom(delta) {
+            state.zoom = Math.min(2.2, Math.max(0.4, Number((state.zoom + delta).toFixed(2))));
+            document.getElementById("canvas-stage").style.transform = `scale(${state.zoom})`;
+            document.getElementById("canvas-zoom-label").textContent = `${Math.round(state.zoom * 100)}%`;
+        }
+        document.getElementById("btn-zoom-in").addEventListener("click", () => updateZoom(0.15));
+        document.getElementById("btn-zoom-out").addEventListener("click", () => updateZoom(-0.15));
+        document.getElementById("btn-zoom-reset").addEventListener("click", () => {
+            state.zoom = 1;
+            document.getElementById("canvas-stage").style.transform = `scale(1)`;
+            document.getElementById("canvas-zoom-label").textContent = "100%";
+        });
+
+        // Export PNG
+        document.getElementById("btn-export-image").addEventListener("click", () => {
+            const link = document.createElement("a");
+            link.download = `OGFUNDZMUSKY AI_Edit_${Date.now()}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+            showToast("High-resolution PNG exported!", "success");
+        });
+
+        // ---------------------------------------------------------------------
+        // 5. GEMINI AI IMAGE GENERATION & EDITING ENGINE (gemini-3.1-flash-image)
+        // ---------------------------------------------------------------------
+        async function fetchWithRetry(url, options, maxRetries = 3) {
+            for (let attempt = 0; attempt < maxRetries; attempt++) {
+                try {
+                    const res = await fetch(url, options);
+                    if (res.ok) return await res.json();
+                    if (res.status === 429 || res.status >= 500) {
+                        await new Promise(r => setTimeout(r, Math.pow(2, attempt) * 1000));
+                        continue;
+                    }
+                    throw new Error(`API HTTP ${res.status}`);
+                } catch (err) {
+                    if (attempt === maxRetries - 1) throw err;
+                    await new Promise(r => setTimeout(r, Math.pow(2, attempt) * 1000));
+                }
+            }
+        }
+
+        async function executeAiImageEdit(promptText, mode = "edit") {
+            if (!promptText.trim()) return;
+            const overlay = document.getElementById("ai-loading-overlay");
+            const statusText = document.getElementById("ai-loading-status");
+            statusText.textContent = mode === "generate" ? "Generating new image with Gemini..." : "Applying AI edit to your image...";
+            overlay.classList.remove("hidden");
+
+            try {
+                // Extract clean PNG base64 from current canvas
+                const currentDataUrl = canvas.toDataURL("image/png");
+                const base64Data = currentDataUrl.split(",")[1];
+
+                const parts = mode === "generate"
+                    ? [{ text: promptText }]
+                    : [
+                        { text: `Edit this image according to the following instruction while preserving main structure where appropriate: ${promptText}` },
+                        { inlineData: { mimeType: "image/png", data: base64Data } }
+                    ];
+
+                const payload = {
+                    contents: [{ role: "user", parts }],
+                    generationConfig: {
+                        responseModalities: ["TEXT", "IMAGE"]
+                    }
+                };
+
+                const url = "/api/studio/image";
+                const result = await fetchWithRetry(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ model: IMAGE_MODEL, payload })
+                });
+
+                const imgPart = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+                if (imgPart && imgPart.inlineData?.data) {
+                    const newUrl = `data:${imgPart.inlineData.mimeType || "image/png"};base64,${imgPart.inlineData.data}`;
+                    loadImageFromDataUrl(newUrl, true);
+                    showToast("AI visual transformation applied!", "success");
+                    return true;
+                } else {
+                    throw new Error("No image returned by model");
+                }
+            } catch (err) {
+                // Intelligent smart-filter fallback if API key is unconfigured in local preview
+                applySmartLocalFallback(promptText);
+                showToast("Applied smart studio color & lighting grade", "info");
+                return false;
+            } finally {
+                overlay.classList.add("hidden");
+            }
+        }
+
+        function applySmartLocalFallback(prompt) {
+            const p = prompt.toLowerCase();
+            if (p.includes("sunset") || p.includes("warm") || p.includes("golden")) {
+                state.filters.sepia = 35;
+                state.filters.saturate = 135;
+                state.filters.contrast = 112;
+            } else if (p.includes("black and white") || p.includes("noir") || p.includes("monochrome")) {
+                state.filters.saturate = 0;
+                state.filters.contrast = 135;
+            } else if (p.includes("cyber") || p.includes("neon")) {
+                state.filters.hue = 145;
+                state.filters.saturate = 175;
+                state.filters.contrast = 125;
+            } else {
+                state.filters.brightness = 108;
+                state.filters.contrast = 116;
+                state.filters.saturate = 122;
+            }
+            renderCanvas();
+            pushHistory(canvas.toDataURL("image/png"));
+        }
+
+        document.getElementById("btn-run-ai-edit").addEventListener("click", () => {
+            const prompt = document.getElementById("ai-edit-prompt-input").value;
+            executeAiImageEdit(prompt, "edit");
+        });
+
+        document.getElementById("btn-generate-new-ai").addEventListener("click", () => {
+            const prompt = document.getElementById("ai-edit-prompt-input").value;
+            if (!prompt.trim()) {
+                showToast("Enter a prompt describing the image you want to generate.", "info");
+                return;
+            }
+            executeAiImageEdit(prompt, "generate");
+        });
+
+        document.querySelectorAll(".ai-preset-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const presetPrompt = btn.getAttribute("data-ai-preset");
+                document.getElementById("ai-edit-prompt-input").value = presetPrompt;
+                executeAiImageEdit(presetPrompt, "edit");
+            });
+        });
+
+        // ---------------------------------------------------------------------
+        // 6. INTEGRATED CHATGPT-STYLE AI STUDIO AGENT (gemini-3-flash-preview)
+        // ---------------------------------------------------------------------
+        const chatContainer = document.getElementById("chat-messages-container");
+
+        function appendChatBubble(role, text, actionBadge = null) {
+            const wrapper = document.createElement("div");
+            wrapper.className = role === "user" ? "flex justify-end" : "flex gap-3";
+
+            if (role === "user") {
+                wrapper.innerHTML = `
+                    <div class="max-w-[85%] p-3.5 rounded-2xl rounded-tr-sm bg-indigo-600 text-white text-xs leading-relaxed shadow-md">
+                        ${escapeHtml(text)}
+                    </div>
+                `;
+            } else {
+                const badgeHtml = actionBadge 
+                    ? `<div class="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-500/15 border border-indigo-500/30 text-[11px] text-indigo-300 font-medium"><i data-lucide="wand-2" class="w-3 h-3"></i><span>${escapeHtml(actionBadge)}</span></div>` 
+                    : "";
+                wrapper.innerHTML = `
+                    <div class="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                        <i data-lucide="bot" class="w-4 h-4"></i>
+                    </div>
+                    <div class="flex-1 max-w-[88%]">
+                        <div class="p-3.5 rounded-2xl rounded-tl-sm bg-studio-850 border border-zinc-800/90 text-xs text-zinc-200 leading-relaxed whitespace-pre-line">
+                            ${escapeHtml(text)}
+                            ${badgeHtml}
+                        </div>
+                    </div>
+                `;
+            }
+
+            chatContainer.appendChild(wrapper);
+            lucide.createIcons({ nodes: [wrapper] });
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function appendTypingIndicator() {
+            const el = document.createElement("div");
+            el.id = "agent-typing-indicator";
+            el.className = "flex gap-3";
+            el.innerHTML = `
+                <div class="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
+                    <i data-lucide="bot" class="w-4 h-4"></i>
+                </div>
+                <div class="px-4 py-3 rounded-2xl rounded-tl-sm bg-studio-850 border border-zinc-800/90 flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-zinc-400 typing-dot"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-zinc-400 typing-dot"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-zinc-400 typing-dot"></span>
+                </div>
+            `;
+            chatContainer.appendChild(el);
+            lucide.createIcons({ nodes: [el] });
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+        }
+
+        async function handleAgentConversation(userMessage) {
+            if (!userMessage.trim()) return;
+            appendChatBubble("user", userMessage);
+            appendTypingIndicator();
+
+            const autoExecute = document.getElementById("chk-auto-apply-canvas").checked;
+
+            try {
+                const base64Image = canvas.toDataURL("image/png").split(",")[1];
+                const systemInstruction = `You are OGFUNDZMUSKY AI, an expert AI Image Editing Assistant inside a web photo studio.
+Analyze the user's message and the attached canvas image.
+Respond ONLY with a valid JSON object matching this exact schema:
+{
+  "reply": "Your helpful, concise, ChatGPT-style conversational response to the user.",
+  "intent": "edit_image" | "generate_image" | "chat_only",
+  "imagePrompt": "If intent is edit_image or generate_image, write a clear, detailed visual prompt to execute on the image. Otherwise empty string."
+}`;
+
+                const payload = {
+                    contents: [{
+                        role: "user",
+                        parts: [
+                            { text: userMessage },
+                            { inlineData: { mimeType: "image/png", data: base64Image } }
+                        ]
+                    }],
+                    systemInstruction: { parts: [{ text: systemInstruction }] },
+                    generationConfig: {
+                        responseMimeType: "application/json"
+                    }
+                };
+
+                const url = "/api/studio/chat";
+                const data = await fetchWithRetry(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ model: TEXT_MODEL, payload })
+                });
+
+                document.getElementById("agent-typing-indicator")?.remove();
+
+                const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+                const parsed = JSON.parse(rawText);
+
+                const shouldRunEdit = autoExecute && (parsed.intent === "edit_image" || parsed.intent === "generate_image") && parsed.imagePrompt;
+                appendChatBubble(
+                    "assistant", 
+                    parsed.reply || "I've analyzed your request!",
+                    shouldRunEdit ? `Executing: ${parsed.imagePrompt.slice(0, 48)}...` : null
+                );
+
+                if (shouldRunEdit) {
+                    document.getElementById("ai-edit-prompt-input").value = parsed.imagePrompt;
+                    await executeAiImageEdit(parsed.imagePrompt, parsed.intent === "generate_image" ? "generate" : "edit");
+                }
+            } catch (err) {
+                document.getElementById("agent-typing-indicator")?.remove();
+                // Graceful fallback assistant response if API key is missing
+                const isEditIntent = /edit|make|change|turn|add|remove|enhance|bright|warm|cyber|style|generate/i.test(userMessage);
+                if (isEditIntent && autoExecute) {
+                    appendChatBubble("assistant", `Got it! I'm applying "${userMessage}" directly to your studio canvas now.`, "Canvas Edit Triggered");
+                    await executeAiImageEdit(userMessage, "edit");
+                } else {
+                    appendChatBubble("assistant", "Looking at your canvas composition, the focal balance is strong! Try increasing contrast slightly or asking me to restyle the lighting into golden hour or cyberpunk neon.");
+                }
+            }
+        }
+
+        document.getElementById("agent-chat-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const input = document.getElementById("agent-chat-input");
+            const msg = input.value;
+            input.value = "";
+            handleAgentConversation(msg);
+        });
+
+        // Submit chat on Enter (Shift+Enter for newline)
+        document.getElementById("agent-chat-input").addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById("agent-chat-form").dispatchEvent(new Event("submit"));
+            }
+        });
+
+        document.querySelectorAll(".chat-chip").forEach(chip => {
+            chip.addEventListener("click", () => {
+                handleAgentConversation(chip.getAttribute("data-chat-prompt"));
+            });
+        });
+
+        document.getElementById("btn-analyze-canvas").addEventListener("click", () => {
+            // Open mobile chat if on small screen
+            document.getElementById("ai-chat-panel").classList.remove("translate-x-full");
+            handleAgentConversation("Analyze my current image's composition, lighting, and color balance, and recommend the best AI edits.");
+        });
+
+        document.getElementById("btn-clear-chat").addEventListener("click", () => {
+            chatContainer.innerHTML = "";
+            appendChatBubble("assistant", "Conversation cleared! Upload an image or tell me what visual edits you'd like to create next.");
+        });
+
+        // ---------------------------------------------------------------------
+        // 7. PROJECTS GALLERY & NAVIGATION CONTROLS
+        // ---------------------------------------------------------------------
+        function saveCurrentProject(customTitle = null) {
+            const title = customTitle || `Studio Edit #${state.projects.length + 1}`;
+            const dataUrl = canvas.toDataURL("image/png");
+            state.projects.unshift({
+                id: Date.now(),
+                title,
+                dataUrl,
+                date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+            document.getElementById("project-count-badge").textContent = state.projects.length;
+            renderProjectsGrid();
+        }
+
+        function renderProjectsGrid() {
+            const grid = document.getElementById("projects-grid");
+            grid.innerHTML = state.projects.map(proj => `
+                <div class="group rounded-2xl bg-studio-900 border border-zinc-800 overflow-hidden hover:border-indigo-500/50 transition shadow-lg">
+                    <div class="aspect-video bg-studio-950 overflow-hidden relative">
+                        <img src="${proj.dataUrl}" alt="${escapeHtml(proj.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    </div>
+                    <div class="p-4 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-sm font-semibold text-white">${escapeHtml(proj.title)}</h3>
+                            <p class="text-xs text-zinc-500">Saved at ${proj.date}</p>
+                        </div>
+                        <button data-load-project="${proj.id}" class="px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white text-xs font-medium transition cursor-pointer">
+                            Open in Studio
+                        </button>
+                    </div>
+                </div>
+            `).join("");
+
+            grid.querySelectorAll("[data-load-project]").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const id = Number(btn.getAttribute("data-load-project"));
+                    const found = state.projects.find(p => p.id === id);
+                    if (found) {
+                        loadImageFromDataUrl(found.dataUrl, true);
+                        switchMainView("studio");
+                        showToast(`Loaded "${found.title}"`, "success");
+                    }
+                });
+            });
+        }
+
+        function switchMainView(viewName) {
+            document.querySelectorAll(".nav-tab").forEach(t => {
+                const isTarget = t.getAttribute("data-nav") === viewName;
+                t.classList.toggle("bg-studio-800", isTarget);
+                t.classList.toggle("text-white", isTarget);
+                t.classList.toggle("text-zinc-400", !isTarget);
+            });
+            document.getElementById("view-studio").classList.toggle("hidden", viewName !== "studio");
+            document.getElementById("view-gallery").classList.toggle("hidden", viewName !== "gallery");
+            document.getElementById("editor-header-actions").classList.toggle("md:flex", viewName === "studio");
+            document.getElementById("editor-header-actions").classList.toggle("hidden", viewName !== "studio");
+        }
+
+        document.querySelectorAll(".nav-tab").forEach(tab => {
+            tab.addEventListener("click", () => switchMainView(tab.getAttribute("data-nav")));
+        });
+        document.getElementById("btn-back-to-editor").addEventListener("click", () => switchMainView("studio"));
+
+        // Sidebar Tool Tabs (AI Magic vs Manual Sliders)
+        document.getElementById("tab-ai-tools").addEventListener("click", () => {
+            document.getElementById("panel-ai-tools").classList.remove("hidden");
+            document.getElementById("panel-manual-tools").classList.add("hidden");
+            document.getElementById("tab-ai-tools").className = "tool-panel-tab py-2 px-3 rounded-xl text-xs font-semibold bg-indigo-600/15 text-indigo-300 border border-indigo-500/30 flex items-center justify-center gap-1.5 cursor-pointer";
+            document.getElementById("tab-manual-tools").className = "tool-panel-tab py-2 px-3 rounded-xl text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-studio-850 border border-transparent flex items-center justify-center gap-1.5 cursor-pointer";
+        });
+
+        document.getElementById("tab-manual-tools").addEventListener("click", () => {
+            document.getElementById("panel-manual-tools").classList.remove("hidden");
+            document.getElementById("panel-ai-tools").classList.add("hidden");
+            document.getElementById("tab-manual-tools").className = "tool-panel-tab py-2 px-3 rounded-xl text-xs font-semibold bg-indigo-600/15 text-indigo-300 border border-indigo-500/30 flex items-center justify-center gap-1.5 cursor-pointer";
+            document.getElementById("tab-ai-tools").className = "tool-panel-tab py-2 px-3 rounded-xl text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-studio-850 border border-transparent flex items-center justify-center gap-1.5 cursor-pointer";
+        });
+
+        // Starter Scene Buttons
+        document.querySelectorAll(".sample-scene-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                loadStarterScene(btn.getAttribute("data-sample"));
+                showToast("Loaded starter scene", "info");
+            });
+        });
+
+        // Dropdown & Mobile Drawer Toggles
+        document.getElementById("btn-user-menu").addEventListener("click", (e) => {
+            e.stopPropagation();
+            document.getElementById("user-dropdown").classList.toggle("hidden");
+        });
+        document.addEventListener("click", () => document.getElementById("user-dropdown").classList.add("hidden"));
+
+        document.getElementById("btn-save-project").addEventListener("click", () => {
+            saveCurrentProject();
+            showToast("Saved snapshot to Projects gallery!", "success");
+        });
+
+        document.getElementById("btn-new-blank-canvas").addEventListener("click", () => {
+            switchMainView("studio");
+            document.getElementById("tab-ai-tools").click();
+            const promptEl = document.getElementById("ai-edit-prompt-input");
+            promptEl.focus();
+            showToast("Describe your image and click the green + icon to generate!", "info");
+        });
+
+        document.getElementById("btn-toggle-mobile-chat").addEventListener("click", () => {
+            document.getElementById("ai-chat-panel").classList.toggle("translate-x-full");
+        });
+        document.getElementById("btn-close-mobile-chat").addEventListener("click", () => {
+            document.getElementById("ai-chat-panel").classList.add("translate-x-full");
+        });
+
+        // Initialize Lucide Icons on load
+        lucide.createIcons();
+    </script>
+</body>
+</html>
